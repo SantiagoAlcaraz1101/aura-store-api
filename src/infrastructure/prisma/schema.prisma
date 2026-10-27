@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum Role {
+  admin
+  user
+}
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @db.VarChar(80)
+  email        String   @unique @db.VarChar(120)
+  passwordHash String   @map("password_hash")
+  role         Role     @default(user)
+  createdAt    DateTime @default(now()) @map("created_at")
+  orders       Order[]
+  @@map("users")
+}
+model Brand {
+  id       String    @id
+  name     String
+  products Product[]
+  @@map("brands")
+}
+model Category {
+  id          String    @id
+  name        String
+  description String
+  products    Product[]
+  @@map("categories")
+}
+model Product {
+  id          String        @id @default(uuid())
+  name        String
+  description String
+  brandId     String        @map("brand_id")
+  categoryId  String        @map("category_id")
+  color       String
+  price       Int
+  sku         String        @unique
+  image       String
+  alt         String
+  tag         String
+  createdAt   DateTime      @default(now()) @map("created_at")
+  brand       Brand         @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  sizes       ProductSize[]
+  orders      Order[]
+  @@index([categoryId, brandId])
+  @@map("products")
+}
+model ProductSize {
+  productId String  @map("product_id")
+  size      Float
+  stock     Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  @@id([productId, size])
+  @@map("product_sizes")
+}
+model Order {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  productId String   @map("product_id")
+  size      Float
+  city      String   @db.VarChar(80)
+  message   String   @db.VarChar(600)
+  unitPrice Int      @map("unit_price")
+  status    String   @default("recibida")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  @@index([userId, createdAt])
+  @@map("orders")
+}
