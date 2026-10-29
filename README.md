@@ -63,10 +63,10 @@ Auth: POST `/api/auth/register`, POST `/api/auth/login`, GET `/api/auth/me` (ses
 
 Los listados responden `{ pagination, data }`. Catálogo acepta page, limit, search, categoryId, brandId, minPrice, maxPrice y sort. Una solicitud relaciona usuario y producto; la base impide borrar un producto con solicitudes para conservar ese historial.
 
-## Pruebas, IA y despliegue
+## Pruebas y despliegue
 
 `npm run typecheck:tests` y `npm test`: [detalle de los casos](tests/README.md). El [workflow de CI](.github/workflows/verify.yml) usa PostgreSQL efímero. La primera ejecución publicada pasó en [GitHub Actions](https://github.com/SantiagoAlcaraz1101/aura-store-api/actions/runs/40808114436). Estas pruebas no sustituyen las nueve comprobaciones de navegador en producción.
 
-Codex ayudó a implementar la migración, validaciones, pruebas y documentación. Se corrigió el límite de contraseñas para contar bytes como bcrypt y se actualizó deepmerge-ts, validando generación Prisma, migraciones y seed. No se atribuyen al autor experiencias personales que no haya escrito; debe revisar y explicar estas decisiones en la sustentación.
+Me apoyé en IA para la migración, las validaciones, las pruebas y la documentación de la API. Entre las correcciones del proyecto están el límite de contraseñas por bytes, para respetar el límite de bcrypt, y la actualización de deepmerge-ts. La generación de Prisma, las migraciones y el seed se verificaron después de ese cambio. Incluyo las pruebas y sus resultados para respaldar estas decisiones, y señalo por separado las comprobaciones pendientes en producción.
 
 `render.yaml` prepara API y PostgreSQL en Render. Despliegue confirmado en Render. Falta confirmar la conexión GitHub para actualizaciones automáticas. **Evidencia Network pendiente:** obtener una captura auténtica de una petición protegida en el navegador y añadirla aquí; no sustituirla por una captura de terminal ni por una imagen construida.
