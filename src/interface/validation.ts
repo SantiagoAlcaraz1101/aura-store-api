@@ -3,7 +3,7 @@ const requiredText = (min: number, max: number) => z.string({ error: 'Este campo
 const email = z.email('Escribe un correo válido.').max(120).transform((value) => value.trim().toLowerCase());
 const password = z.string().min(8, 'Usa al menos 8 caracteres.').refine((value) => Buffer.byteLength(value, 'utf8') <= 72, 'La contraseña no puede superar 72 bytes.');
 export const registerSchema = z.object({ name: requiredText(3, 80), email, password }).strict();
-export const loginSchema = z.object({ email, password: z.string().min(1, 'Escribe tu contraseña.').max(72) }).strict();
+export const loginSchema = z.object({ email, password: z.string().min(1, 'Escribe tu contraseña.').refine((value) => Buffer.byteLength(value, 'utf8') <= 72, 'La contraseña no puede superar 72 bytes.') }).strict();
 export const paginationSchema = z.object({ page: z.coerce.number().int().min(1).max(100000).default(1), limit: z.coerce.number().int().min(1).max(50).default(6) }).strict();
 export const catalogQuerySchema = paginationSchema.extend({ search: z.string().trim().max(80).optional(), categoryId: z.string().min(1).max(80).optional(), brandId: z.string().min(1).max(80).optional(), minPrice: z.coerce.number().int().min(0).max(100000000).optional(), maxPrice: z.coerce.number().int().min(0).max(100000000).optional(), sort: z.enum(['featured', 'price-asc', 'price-desc', 'name']).default('featured') }).refine((query) => query.minPrice === undefined || query.maxPrice === undefined || query.minPrice <= query.maxPrice, { path: ['maxPrice'], message: 'El precio máximo debe ser mayor o igual al mínimo.' });
 export const idSchema = z.object({ id: z.string().regex(/^[a-zA-Z0-9-]{1,80}$/, 'Identificador inválido.') }).strict();
